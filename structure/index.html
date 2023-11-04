@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<title>My Form</title>
+	<style>
+        .container{
+            border: 1px solid gray;
+            width: 30%;
+            height: auto;
+            padding: 10px;
+            margin: auto;
+            
+        }
+		.rowLine{
+			display: flex;
+			margin-bottom: 8px;
+		}
+		.rowLine label{
+			width: 120px;
+			text-align: right;
+			padding-right: 10px;
+		}
+		#error{
+			color:red;
+			font-weight: bold;
+		}
+        #dataList{
+            border: 2px solid gray;
+            background-color: rgba(182, 200, 200, 0.608);
+            color: black;
+            margin-top: 40px;
+            width: 95%;
+            height: auto;
+            padding: 10px;
+        }
+	</style>	
+	<script src="Scripts/jquery.js"></script>
+	<script>
+		$(document).ready(() => {
+			$("#submit").click(() => {
+    				var valid = true;
+    				var msg = '';
+
+    				if ($('#name').val() == '') {
+        				valid = false;
+        				msg+="<li>Name is required !!</li>"
+    				}
+                    if ($('#email').val() == '') {
+                            valid = false;
+                            msg+="<li>Email is required !!</li>"
+                        }
+                    if ($('#phone').val() == '') {
+                            valid = false;
+                            msg+="<li>Phone Number required !!</li>"
+                        }
+                    if ($('#city').val() == '') {
+                            valid = false;
+                            msg+="<li>City is required !!</li>"
+                        }
+
+					if ($("input[name='gender']:checked").length<1) {
+                        valid = false;
+                        msg += "<li>Gender is required !!</li>"
+                    }
+				
+                    		if (!valid) {
+                       			$('#error ul').html(msg);
+                        		$('#error').show();
+                    		}
+				else{
+					$('#error ul').html("");
+                        		$('#error').hide();
+
+					console.log($('#f').serialize());
+					$.ajax({
+    					type: "POST",
+    					url: '/submitForm',
+    					dataType: 'json',
+    					data: $('#f').serialize()
+					}).done(r => {
+    					
+    						$('#dataList').html(
+							`<ul>
+            						<li>Name : ${r.name}</li>
+            						<li>Email : ${r.email}</li>
+            						<li>Phone Number : ${r.phone}</li>
+                                    <li>City : ${r.city}</li>
+            						<li>Gender : ${r.gender}</li>
+        						</ul>
+        						`).show();
+					});
+				}
+			});
+		})
+	</script>
+	</head>
+	<body>
+
+		<div class="container">
+			<h2>Registration</h2>
+
+			<div id="error" style="display:none;">
+				<ul>
+					<li></li>
+				</ul>
+			</div>
+
+			<form id="f" action="/submitForm", method="post">
+
+				<div class="rowLine">
+					<label for="name">Name : </label>
+					<input type="text" id="name" name="name" class="input" autofocus>
+				</div>
+				<div class="rowLine">
+					<label for="email">Email : </label>
+					<input type="email" id="email" name="email" class="input">
+				</div>
+				<div class="rowLine">
+					<label for="phone">Phone Number : </label>
+					<input type="number" id="phone" name="phone" class="input">
+				</div>
+
+                <div class="rowLine">
+                    <label for="city">City : </label>
+                    <select class="input" name="city" id="city">
+                        <option value="">select city</option>
+                        <option value="Dhaka">Dhaka</option>
+                        <option value="Rajshahi">Rajshahi</option>
+                        <option value="Rajshahi">Naogaon</option>
+                        <option value="Pabna">Pabna</option>
+                        <option value="Bogura">Bogura</option>
+                    </select>
+                </div>
+
+					<div class="rowLine">
+						<label for="gender">Gender :</label>
+						<input type="radio" name="gender" value="male" /> Male
+						<input type="radio" name="gender" value="female" /> Female
+					</div>
+
+				<div class="rowLine">
+					<label>&nbsp;</label>
+					<button type="button" id="submit">Submit</button>
+				</div>
+				
+			</form>
+			<div id="dataList" style="display:none;"></div>
+		</div>
+		
+	</body>
+</html>
